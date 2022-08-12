@@ -1,0 +1,3 @@
+node_modules/
+routes/algorand/.secret
+yarn.lock

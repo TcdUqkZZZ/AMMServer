@@ -1,0 +1,23 @@
+{
+    "testnet": {
+        "algodServer": "https://white-young-owl.algorand-testnet.quiknode.pro/",
+        "algodToken": "d021d98d3e6b6717856dbeafd370e5c09144ca17",
+        "algodPort": "443",
+        "appId": "104767267",
+        "appAccount": "4D6IHBTA3SEQEJW2ODDHTKJHYEJHS2ZTO7C6KTKWZPUMXHP6JOU4Z7CY4M",
+        "dbURI": "mongodb+srv://deentradb.ghh4v.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority",
+        "dbName": "DeentraDevnet",
+        "managerAddr": "3XDHWFGA6XIDB6D752PZVTHHGDVDEIJP7XDKJPZF5OYFCTE2OH6NNPTJQE"
+    },
+
+    "mainnet": {
+        "algodServer": "devnet rpc",
+        "algodToken": "token",
+        "algodPort": "port",
+        "appId": "mainnet AppId",
+        "appAccount": "mainnet App Account",
+        "dbURI": "mongodb+srv://deentradb.ghh4v.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority",
+        "dbName": "Deentra",
+        "managerAddr": ""
+    }
+}
