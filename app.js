@@ -4,9 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
-
 var algorand = require('./routes/algorand');
-var usersRouter = require('./routes/users');
+algodPort = config.algodPort;
 //const { Application } = require('algosdk/dist/types/src/client/v2/algod/models/types');
 
 var app = express();

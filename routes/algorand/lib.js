@@ -1,9 +1,10 @@
-const {MongoClient} = require("mongodb") 
+const {MongoClient, ServerApiVersion} = require("mongodb") 
 const {algorandError, dbError} = require('./errors.js')
 const fs = require('fs');
 const path = require("path");
 const algosdk = require('algosdk');
 const secret = fs.readFileSync(path.resolve(__dirname, "./.secret"), 'utf8')
+const mongoCert = '../../mongoCert.pem'
 
 
  exports.whitelist = async function (manager, addrToWhitelist, dbURI, dbName, appId, algodClient){
@@ -13,7 +14,11 @@ const secret = fs.readFileSync(path.resolve(__dirname, "./.secret"), 'utf8')
   let db;
   let sk = algosdk.mnemonicToSecretKey(secret);
   try {
-    mongoClient = new MongoClient(dbURI);
+    mongoClient = new MongoClient(dbURI, {
+      sslKey: mongoCert,
+      sslCert: mongoCert,
+      serverApi: ServerApiVersion.v1
+    });
     await mongoClient.connect();
     db = mongoClient.db(dbName)
     user = db.collection('Whitelisted').find({address: addrToWhitelist})
@@ -64,7 +69,12 @@ exports.mint =  async function (manager,buyerAddr,paymentTx,appId, dbURI, dbName
   let chosenAsset
   let db;
   try {
-    mongoClient = new MongoClient(dbURI);
+    mongoClient = new MongoClient(dbURI,
+      {
+        sslKey: mongoCert,
+        sslCert: mongoCert,
+        serverApi: ServerApiVersion.v1
+      });
     await mongoClient.connect();
     db = mongoClient.db(dbName)
     const assetList = db.collection('assets')

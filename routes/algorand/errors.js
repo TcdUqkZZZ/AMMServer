@@ -10,6 +10,13 @@ exports.dbError = class dbError extends Error {
     super(message);
     this.name = "algorandError"}
   }
+
+exports.algodError = class algorandError extends Erro {
+  constructor(message){
+    super(message);
+    this.name = "algodError"
+  }
+}
   
   
   
