@@ -1,7 +1,7 @@
 {
     "testnet": {
-        "algodServer": "https://white-young-owl.algorand-testnet.quiknode.pro/",
-        "algodToken": "d021d98d3e6b6717856dbeafd370e5c09144ca17",
+        "algodServer": "https://white-young-owl.algorand-testnet.quiknode.pro/algod/",
+        "algodToken": "d451108d1b12d8724fc3e1f5f380fa50c3b80b10",
         "algodPort": "443",
         "appId": "104767267",
         "appAccount": "4D6IHBTA3SEQEJW2ODDHTKJHYEJHS2ZTO7C6KTKWZPUMXHP6JOU4Z7CY4M",

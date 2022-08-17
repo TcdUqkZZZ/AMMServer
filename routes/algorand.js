@@ -3,6 +3,7 @@ var router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, './algorand/config.json')))
+let managerInfo = JSON.parse(fs.readFileSync(path.resolve(__dirname, './algorand/.secret.json')))
 const {whitelist, mint} = require('./algorand/lib.js')
 const algosdk = require('algosdk')
 const {algodError} = require('./algorand/errors.js')
@@ -10,8 +11,14 @@ let mode;
 let appId;
 let appAccount;
 let dbURI;
-let manager
+let managerAddr = managerInfo.address;
+let managerMnemonic = managerInfo.mnemonic;
 let algodClient
+let algodServer
+let algodPort
+let algodToken
+let dbName;
+
 
 mode = process.argv.slice(2)[0];
 
@@ -20,9 +27,10 @@ try {
     appId = config.testnet.appId;
     appAccount = config.testnet.appAccount;
     dbURI = config.testnet.dbURI;
-    let algodServer = config.testnet.algodServer;
-    let algodPort = config.testnet.algodPort;
-    let algodToken = config.testnet.algodToken;
+    dbName = config.testnet.dbName;
+    algodServer = config.testnet.algodServer;
+    algodPort = config.testnet.algodPort;
+    algodToken = config.testnet.algodToken;
 } catch(e) {
 
 }}
@@ -30,9 +38,10 @@ else if (mode == 'mainnet'){
 try {  appId = config.mainnet.appId;
     appAccount = config.mainnet.appAccount;
     dbURI = config.mainnet.dbURI;
-    let algodServer = config.mainnet.algodServer;
-    let algodPort = config.mainnet.algodPort;
-    let algodToken = config.mainnet.algodToken;
+    dbName = config.testnet.dbName;
+    algodServer = config.mainnet.algodServer;
+    algodPort = config.mainnet.algodPort;
+    algodToken = config.mainnet.algodToken;
 
 } catch(e) {
 }
@@ -40,6 +49,7 @@ try {  appId = config.mainnet.appId;
 
 try {
     algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort)
+    console.log(`algodClient initialized with token ${algodToken} on server ${algodServer}`)
 } catch (e) {
 throw new algodError(e.message);
 }
@@ -53,7 +63,7 @@ router.get('/appInfo', (req, res) => {
 
 router.get('/Whitelist', async (req, res) => {
     user = req.params.address
-    let {whitelistOutcome, whitelistTier, whitelistTxId} =  await whitelist(deployer, manager, user,dbURI, appId, algodClient)
+    let {whitelistOutcome, whitelistTier, whitelistTxId} =  await whitelist(managerAddr, managerMnemonic, user,dbURI, dbName, appId, algodClient)
     res.json({
         success: whitelistOutcome,
         tier: whitelistTier,
@@ -63,7 +73,7 @@ router.get('/Whitelist', async (req, res) => {
 
 router.post('/requestMint', async (req, res) => {
     paymentTx = req.body
-    let {result, txId} = await mint(deployer, manager, paymentTx, appId, dbURI, algodClient)
+    let {result, txId} = await mint(managerAddr, managerMnemonic, paymentTx, appId, dbURI,dbName, algodClient)
     res.json({
         result: result,
         assetURI: txId

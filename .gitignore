@@ -1,3 +1,3 @@
 node_modules/
-routes/algorand/.secret
+routes/algorand/.secret.json
 yarn.lock

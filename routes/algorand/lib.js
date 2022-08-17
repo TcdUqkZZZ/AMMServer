@@ -1,18 +1,18 @@
 const {MongoClient, ServerApiVersion} = require("mongodb") 
 const {algorandError, dbError} = require('./errors.js')
-const fs = require('fs');
-const path = require("path");
 const algosdk = require('algosdk');
-const secret = fs.readFileSync(path.resolve(__dirname, "./.secret"), 'utf8')
 const mongoCert = '../../mongoCert.pem'
 
 
- exports.whitelist = async function (manager, addrToWhitelist, dbURI, dbName, appId, algodClient){
+ exports.whitelist = async function (managerAddr, managerMnemonic, addrToWhitelist, dbURI, dbName, appId, algodClient){
+  console.log('attempting to get parameters')
   let params = await algodClient.getTransactionParams().do();
+  console.log("parameters received from node")
   let mongoClient;
   let user;
   let db;
-  let sk = algosdk.mnemonicToSecretKey(secret);
+  let sk = algosdk.mnemonicToSecretKey(managerMnemonic);
+  console.log("attempting mongoDB connection")
   try {
     mongoClient = new MongoClient(dbURI, {
       sslKey: mongoCert,
@@ -20,6 +20,7 @@ const mongoCert = '../../mongoCert.pem'
       serverApi: ServerApiVersion.v1
     });
     await mongoClient.connect();
+    console.log('mongodb connection successful')
     db = mongoClient.db(dbName)
     user = db.collection('Whitelisted').find({address: addrToWhitelist})
   } catch(e){
@@ -31,7 +32,7 @@ const mongoCert = '../../mongoCert.pem'
 
     let txn = algosdk.makeApplicationNoOpTxnFromObject(
       {
-        from: manager,
+        from: managerAddr,
         suggestedParams: params,
         appIndex: appId,
         accounts: [addrToWhitelist],
@@ -62,9 +63,9 @@ const mongoCert = '../../mongoCert.pem'
   }
 }
 
-exports.mint =  async function (manager,buyerAddr,paymentTx,appId, dbURI, dbName, algodClient){
+exports.mint =  async function (managerAddr, managerMnemonic,buyerAddr,paymentTx,appId, dbURI, dbName, algodClient){
   let params = await algodClient.getTransactionParams().do();
-  let sk = algosdk.mnemonicToSecretKey(secret);
+  let sk = algosdk.mnemonicToSecretKey(managerMnemonic);
   let mongoClient;
   let chosenAsset
   let db;
@@ -88,7 +89,7 @@ exports.mint =  async function (manager,buyerAddr,paymentTx,appId, dbURI, dbName
     let stringifiedMetadata = JSON.stringify(chosenAsset.metadata)
     let txn = algosdk.makeApplicationNoOpTxnFromObject(
       {
-        from: manager,
+        from: managerAddr,
         suggestedParams: params,
         appIndex: appId,
         appArgs: [algosdk.encodeObj("buy"),
